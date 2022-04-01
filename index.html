@@ -21,13 +21,15 @@
                 'SecurityError': '摄像头已被禁用，请在系统设置或者浏览器设置中开启后重试',
                 'TypeError': '类型错误，未检测到可用摄像头'
             };
+
+            let video = document.getElementById("webcam");
             
             initVideo();
            
-
+            
             function initVideo() {
                     // let that = this;
-                    let video = document.getElementById("webcam");
+                    
                     console.log(video)
                     setTimeout(() => {
                         if (
@@ -85,9 +87,9 @@
                     }
                 };
                 function videoSuccess(stream) {
-                    this.mediaStreamTrack = stream;
-                    this.video.srcObject = stream;
-                    this.video.play();
+                    let mediaStreamTrack = stream;
+                    video.srcObject = stream;
+                    video.play();
                 };
                 function videoError(error) {
                     // console.error(error);
