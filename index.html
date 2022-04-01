@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
+        <title>face-test</title>
+        <link rel='stylesheet' href=''>
+    </head>
+    <body>
+        <video id="webcam" :style="videoStyle" :width="videoWidth" :height="videoHeight" loop preload>
+        </video>
+        
+        <script type='text/javascript'>
+            const errorMap = {
+                'NotAllowedError': '摄像头已被禁用，请在当前浏览器设置中开启后重试',
+                'AbortError': '硬件问题，导致无法访问摄像头',
+                'NotFoundError': '未检测到可用摄像头',
+                'NotReadableError': '操作系统上某个硬件、浏览器或者网页层面发生错误，导致无法访问摄像头',
+                'OverConstrainedError': '未检测到可用摄像头',
+                'SecurityError': '摄像头已被禁用，请在系统设置或者浏览器设置中开启后重试',
+                'TypeError': '类型错误，未检测到可用摄像头'
+            };
+            
+            initVideo();
+           
+
+            function initVideo() {
+                    // let that = this;
+                    let video = document.getElementById("webcam");
+                    console.log(video)
+                    setTimeout(() => {
+                        if (
+                            navigator.mediaDevices.getUserMedia ||
+                            navigator.getUserMedia ||
+                            navigator.webkitGetUserMedia ||
+                            navigator.mozGetUserMedia
+                        ) {
+                            //调用用户媒体设备, 访问摄像头
+                            getUserMedia(
+                                {
+                                    video: {
+                                        width: {
+                                            ideal: video.videoWidth,
+                                            max: video.videoWidth
+                                        },
+                                        height: {
+                                            ideal: video.videoHeight,
+                                            max: video.videoHeight
+                                        },
+                                        facingMode: "user",    //前置摄像头
+                                        frameRate: {
+                                            ideal: 30,
+                                            min: 10
+                                        }
+                                    }
+                                },
+                                video.videoSuccess,
+                                video.videoError
+                            );
+                        } else {
+                            // this.$toast.center("摄像头打开失败,请检查权限设置!");
+                            // console.log("摄像头打开失败,请检查权限设置!")
+                            alert("摄像头打开失败,请检查权限设置!")
+                        }
+                    }, 300);
+                };
+                function getUserMedia(constraints, success, error) {
+                    if (navigator.mediaDevices.getUserMedia) {
+                        console.log(constraints,success,error)
+                        //最新的标准API
+                        navigator.mediaDevices
+                            .getUserMedia(constraints)
+                            .then(success)
+                            .catch(videoError);
+                    } else if (navigator.webkitGetUserMedia) {
+                        //webkit核心浏览器
+                        navigator.webkitGetUserMedia(constraints, success, error);
+                    } else if (navigator.mozGetUserMedia) {
+                        //firfox浏览器
+                        navigator.mozGetUserMedia(constraints, success, error);
+                    } else if (navigator.getUserMedia) {
+                        //旧版API
+                        navigator.getUserMedia(constraints, success, error);
+                    }
+                };
+                function videoSuccess(stream) {
+                    this.mediaStreamTrack = stream;
+                    this.video.srcObject = stream;
+                    this.video.play();
+                };
+                function videoError(error) {
+                    // console.error(error);
+                    // this.$toast.center("摄像头打开失败,请检查权限设置!");
+                    // console.log("摄像头打开失败,请检查权限设置!")
+                    // alert(error)
+                    if (errorMap[error.name]) {
+                        alert(errorMap[error.name]);
+                    }
+                };
+
+        </script>
+    </body>
+</html>
